@@ -3,13 +3,6 @@ import Foundation
 /**
  The common interface for all types of components.
  */
-public protocol Component: Codable, Equatable {
+public protocol Component: AnyObject, Codable {
 
-  var type: String { get }
-}
-
-extension Component {
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.type == rhs.type
-  }
 }
