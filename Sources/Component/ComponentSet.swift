@@ -1,7 +1,7 @@
 import Foundation
 
 /**
- A component set is much like a set in that it contains unordered, unique elements.
+ A component set is much like a `Set` in that it contains unordered, unique elements.
 
  The main differences with a normal set are that:
  1. All elements must be of types that conform to Component, and
@@ -12,36 +12,54 @@ import Foundation
  anywhere there's a reference to it, and to enable hierarchical relationships between instances of
  components (whether the of same type or not). Because of this, copies of a component set (a value
  type) are always shallow: the elements in the copy are the same objects as in the original.
+
+ TODO(nicolas-miari): Consider renaming 'element' to 'component' everywhere in the public interface.
  */
 public struct ComponentSet {
 
+  // MARK: - Internal Storage
+
+  /**
+   The actual storage is just a plain, heterogeneous array components. The uniqueness of each stored
+   element is guaranteed by the uniqueness of type, and that is in turn guarded by the insert
+   method's implementation.
+   */
   private var elements: [any Component] = []
 
   // MARK: - Introspection
 
+  /**
+   Returns `true` if the set contains a component of the specified type.
+   */
   public func containsElement<T: Component>(ofType type: T.Type) -> Bool {
     for element in elements {
       if element is T {
-        print("Set contains element of type \(String(describing: type))")
         return true
       }
     }
-    print("Set does NOT contains element of type \(String(describing: type))")
     return false
   }
 
+  /**
+   Returns the (at most one) element of the specified type, or `nil` if none is present in the set.
+   */
   func element<T: Component>(ofType type: T.Type) -> T? {
     return elements.first { $0 is T } as? T
   }
 
+  /**
+   Returns `true` if the set does not contain a component of the same type as the argument.
+   */
   func canInsertElement<T: Component>(_ element: T) -> Bool {
     return !containsElement(ofType: type(of: element))
   }
 
   // MARK: - Modification
 
-  /// Inserts the passed component if no other component of the same type is present yet, throws
-  /// otherwise.
+  /**
+   Attempts to insert the specified component into the set. If a component of the same type is
+   already present, `ComponentSetError.duplicateComponent` is thrown.
+   */
   mutating func insertElement<T: Component>(_ element: T) throws {
     guard canInsertElement(element) else {
       throw ComponentSetError.duplicateComponent
@@ -49,7 +67,11 @@ public struct ComponentSet {
     elements.append(element)
   }
 
-  /// Removes the component of the specified type if present, throws an error otherwise.
+  /**
+   Attempts to remove the single component of the sepcified type. If none is present in the set,
+   `ComponentSetError.componentOfTypeNotFound` and the name of the missing type is passed in the
+   error's associated value.
+   */
   mutating func removeElement<T: Component>(ofType type: T.Type) throws -> T {
     guard let index = elements.firstIndex(where: { $0 is T }), let element = elements.remove(at: index) as? T else {
       throw ComponentSetError.componentOfTypeNotFound(name: String(describing: T.self))
@@ -60,7 +82,19 @@ public struct ComponentSet {
 
 // MARK: - Supporting Types
 
+/**
+ Error constants throwsn by the various methods of the `ComponentSet` public interface.
+ */
 public enum ComponentSetError: LocalizedError {
+  /**
+   An operation was attempted that would result in the set containing more than one component of the
+   same type.
+   */
   case duplicateComponent
+
+  /**
+   An element of type not present in the set was requested. The name of the type in question is
+   returned in the String associated value.
+   */
   case componentOfTypeNotFound(name: String)
 }
