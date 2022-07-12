@@ -15,7 +15,7 @@ import Foundation
 
  TODO(nicolas-miari): Consider renaming 'element' to 'component' everywhere in the public interface.
  */
-public struct ComponentSet {
+public struct ComponentSet: Codable {
 
   // MARK: - Internal Storage
 
@@ -24,7 +24,26 @@ public struct ComponentSet {
    element is guaranteed by the uniqueness of type, and that is in turn guarded by the insert
    method's implementation.
    */
-  private var elements: [any Component] = []
+  private var elements: [any Component]
+
+  public init() {
+    elements = []
+  }
+
+  // MARK: - Codable Support
+
+  enum CodingKeys: String, CodingKey {
+    case elements
+  }
+
+  public init(from decoder: Decoder) throws {
+    elements = []
+  }
+
+  public func encode(to encoder: Encoder) throws {
+
+    
+  }
 
   // MARK: - Introspection
 
@@ -97,4 +116,9 @@ public enum ComponentSetError: LocalizedError {
    returned in the String associated value.
    */
   case componentOfTypeNotFound(name: String)
+}
+
+public extension Array where Element == any Codable {
+
+
 }
