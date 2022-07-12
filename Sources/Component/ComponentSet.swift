@@ -43,14 +43,14 @@ public struct ComponentSet {
   /**
    Returns the (at most one) element of the specified type, or `nil` if none is present in the set.
    */
-  func element<T: Component>(ofType type: T.Type) -> T? {
+  public func element<T: Component>(ofType type: T.Type) -> T? {
     return elements.first { $0 is T } as? T
   }
 
   /**
    Returns `true` if the set does not contain a component of the same type as the argument.
    */
-  func canInsertElement<T: Component>(_ element: T) -> Bool {
+  public func canInsertElement<T: Component>(_ element: T) -> Bool {
     return !containsElement(ofType: type(of: element))
   }
 
@@ -60,7 +60,7 @@ public struct ComponentSet {
    Attempts to insert the specified component into the set. If a component of the same type is
    already present, `ComponentSetError.duplicateComponent` is thrown.
    */
-  mutating func insertElement<T: Component>(_ element: T) throws {
+  public mutating func insertElement<T: Component>(_ element: T) throws {
     guard canInsertElement(element) else {
       throw ComponentSetError.duplicateComponent
     }
@@ -72,7 +72,7 @@ public struct ComponentSet {
    `ComponentSetError.componentOfTypeNotFound` and the name of the missing type is passed in the
    error's associated value.
    */
-  mutating func removeElement<T: Component>(ofType type: T.Type) throws -> T {
+  public mutating func removeElement<T: Component>(ofType type: T.Type) throws -> T {
     guard let index = elements.firstIndex(where: { $0 is T }), let element = elements.remove(at: index) as? T else {
       throw ComponentSetError.componentOfTypeNotFound(name: String(describing: T.self))
     }
