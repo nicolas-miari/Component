@@ -15,7 +15,8 @@ import Foundation
 
  TODO(nicolas-miari): Consider renaming 'element' to 'component' everywhere in the public interface.
  */
-public struct ComponentSet: Codable {
+@available(*, deprecated, message: "Use ComponentList instead.")
+public struct ComponentSet {
 
   // MARK: - Internal Storage
 
