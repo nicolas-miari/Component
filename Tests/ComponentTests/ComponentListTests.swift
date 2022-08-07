@@ -79,7 +79,7 @@ final class ComponentListTests: XCTestCase {
     let sprite = SpriteComponent(imageName: "Image 1", atlasName: "Atlas 1")
     let rigidBody = RigidBodyComponent(mass: 4)
 
-    var list = ComponentList([transform, sprite, rigidBody])
+    let list = ComponentList([transform, sprite, rigidBody])
 
     // WHEN:
     let encoder = JSONEncoder()
@@ -109,10 +109,9 @@ final class ComponentListTests: XCTestCase {
   }
 }
 
-// MARK: - Supporting Types
+// MARK: - Supporting Test Types and Extensions
 
 fileprivate class TransformComponent: KeyedComponent {
-  static let codingKey = ComponentCodingKey(stringValue: "transform")
   var local: simd_float4x4
   init(local: simd_float4x4 = .identity) {
     self.local = local
@@ -120,7 +119,6 @@ fileprivate class TransformComponent: KeyedComponent {
 }
 
 fileprivate class SpriteComponent: KeyedComponent {
-  static let codingKey = ComponentCodingKey(stringValue: "sprite")
   var imageName: String
   var atlasName: String
   init(imageName: String, atlasName: String) {
@@ -130,7 +128,6 @@ fileprivate class SpriteComponent: KeyedComponent {
 }
 
 fileprivate class RigidBodyComponent: KeyedComponent {
-  static let codingKey = ComponentCodingKey(stringValue: "rigidBody")
   var mass: Float
   init(mass: Float) {
     self.mass = mass
